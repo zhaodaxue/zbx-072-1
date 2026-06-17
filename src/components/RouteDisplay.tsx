@@ -2,7 +2,7 @@ import { useDerivedState } from '@/utils/derived';
 import { Footprints } from 'lucide-react';
 
 export default function RouteDisplay() {
-  const { allPlaced, validation, routeSteps } = useDerivedState();
+  const { allPlaced, validation, routeSteps, accessChainText } = useDerivedState();
 
   if (!allPlaced) {
     return (
@@ -29,6 +29,9 @@ export default function RouteDisplay() {
         <span className="text-xs font-medium">最短动线步数</span>
       </div>
       <span className="text-3xl font-bold text-amber-900 tabular-nums">{routeSteps}</span>
+      {accessChainText && (
+        <span className="text-[10px] text-amber-600 font-medium tracking-wide">{accessChainText}</span>
+      )}
       <span className="text-[10px] text-stone-400">从入口经四器具至出口</span>
     </div>
   );

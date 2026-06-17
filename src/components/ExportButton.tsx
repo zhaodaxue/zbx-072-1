@@ -6,7 +6,7 @@ import { Download, X, Copy, Check } from 'lucide-react';
 
 export default function ExportButton() {
   const grid = useTeaStore((s) => s.grid);
-  const { canExport, routeSteps } = useDerivedState();
+  const { canExport, routeSteps, routeOrder } = useDerivedState();
   const [showModal, setShowModal] = useState(false);
   const [copied, setCopied] = useState(false);
 
@@ -17,14 +17,14 @@ export default function ExportButton() {
   };
 
   const handleCopy = () => {
-    const json = exportPlacement(grid, steps);
+    const json = exportPlacement(grid, steps, routeOrder ?? undefined);
     navigator.clipboard.writeText(json).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     });
   };
 
-  const jsonOutput = canExport ? exportPlacement(grid, steps) : '';
+  const jsonOutput = canExport ? exportPlacement(grid, steps, routeOrder ?? undefined) : '';
 
   return (
     <>

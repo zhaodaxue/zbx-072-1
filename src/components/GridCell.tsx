@@ -5,27 +5,46 @@ interface GridCellProps {
   col: number;
   value: UtensilId | null;
   onClick: () => void;
+  routeNumber?: number | null;
+  isOnRoute?: boolean;
 }
 
-export default function GridCell({ row, col, value, onClick }: GridCellProps) {
+export default function GridCell({ row, col, value, onClick, routeNumber, isOnRoute }: GridCellProps) {
   const isEntrance = row === ENTRANCE[0] && col === ENTRANCE[1];
   const isExit = row === EXIT[0] && col === EXIT[1];
 
   let bgColor = 'bg-amber-50/80 hover:bg-amber-100';
   let borderColor = 'border-stone-300/60';
 
+  if (isOnRoute && !value && !isEntrance && !isExit) {
+    bgColor = 'bg-amber-200/50 hover:bg-amber-200/70';
+    borderColor = 'border-amber-400/40';
+  }
+
   if (value) {
     bgColor = 'bg-amber-100 border-amber-400';
     borderColor = 'border-amber-400';
+    if (isOnRoute) {
+      bgColor = 'bg-amber-200/80 border-amber-500';
+      borderColor = 'border-amber-500';
+    }
   }
 
   if (isEntrance) {
     bgColor = value ? 'bg-sky-100 border-sky-400' : 'bg-sky-50/80 hover:bg-sky-100';
     borderColor = value ? 'border-sky-400' : 'border-sky-300/60';
+    if (isOnRoute && !value) {
+      bgColor = 'bg-sky-200/50 hover:bg-sky-200/70';
+      borderColor = 'border-sky-400/40';
+    }
   }
   if (isExit) {
     bgColor = value ? 'bg-rose-100 border-rose-400' : 'bg-rose-50/80 hover:bg-rose-100';
     borderColor = value ? 'border-rose-400' : 'border-rose-300/60';
+    if (isOnRoute && !value) {
+      bgColor = 'bg-rose-200/50 hover:bg-rose-200/70';
+      borderColor = 'border-rose-400/40';
+    }
   }
 
   return (
@@ -43,6 +62,11 @@ export default function GridCell({ row, col, value, onClick }: GridCellProps) {
           <span className="text-2xl leading-none">{UTENSIL_INFO[value].symbol}</span>
           <span className="text-[10px] font-medium text-stone-600 mt-0.5">{UTENSIL_INFO[value].name}</span>
           <span className="absolute top-0.5 right-1 text-[9px] font-bold text-amber-700">{value}</span>
+          {routeNumber != null && (
+            <span className="absolute -top-1.5 -left-1.5 w-5 h-5 rounded-full bg-amber-600 text-white text-xs font-bold flex items-center justify-center shadow-md">
+              {routeNumber}
+            </span>
+          )}
         </>
       ) : (
         <>

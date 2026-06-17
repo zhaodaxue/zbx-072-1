@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
-import { GridState, UtensilId, allUtensilsPlaced, getUtensilPositions } from './types';
+import { GridState, UtensilId, UTENSIL_INFO, allUtensilsPlaced, getUtensilPositions } from './types';
 import { validate, ValidationResult } from './validator';
-import { calculateRoute } from './routeCalculator';
+import { calculateRouteWithOrder, buildFullPath } from './routeCalculator';
 import { useTeaStore } from '@/store/gridStore';
 
 export interface DerivedState {
@@ -10,6 +10,10 @@ export interface DerivedState {
   routeSteps: number | null;
   canExport: boolean;
   placedUtensils: Record<UtensilId, boolean>;
+  routeOrder: UtensilId[] | null;
+  accessChainText: string | null;
+  pathSet: Set<string> | null;
+  utensilOrder: Record<UtensilId, number> | null;
 }
 
 export function computeDerivedState(grid: GridState): DerivedState {
@@ -25,7 +29,27 @@ export function computeDerivedState(grid: GridState): DerivedState {
   };
 
   const canExport = allPlaced && validation.allPass;
-  const routeSteps = canExport ? calculateRoute(grid) : null;
+
+  let routeSteps: number | null = null;
+  let routeOrder: UtensilId[] | null = null;
+  let accessChainText: string | null = null;
+  let pathSet: Set<string> | null = null;
+  let utensilOrder: Record<UtensilId, number> | null = null;
+
+  if (canExport) {
+    const routeResult = calculateRouteWithOrder(grid);
+    if (routeResult) {
+      routeSteps = routeResult.steps;
+      routeOrder = routeResult.order;
+
+      const names = routeOrder.map((uid) => UTENSIL_INFO[uid].name);
+      accessChainText = `入口→${names.join('→')}→出口`;
+
+      const pathInfo = buildFullPath(grid, routeOrder);
+      pathSet = pathInfo.pathSet;
+      utensilOrder = pathInfo.utensilOrder;
+    }
+  }
 
   return {
     validation,
@@ -33,6 +57,10 @@ export function computeDerivedState(grid: GridState): DerivedState {
     routeSteps,
     canExport,
     placedUtensils,
+    routeOrder,
+    accessChainText,
+    pathSet,
+    utensilOrder,
   };
 }
 

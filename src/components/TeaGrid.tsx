@@ -1,9 +1,11 @@
 import { useTeaStore } from '@/store/gridStore';
+import { useDerivedState } from '@/utils/derived';
 import { ROWS, COLS } from '@/utils/types';
 import GridCell from './GridCell';
 
 export default function TeaGrid() {
   const { grid, handleCellClick } = useTeaStore();
+  const { pathSet, utensilOrder } = useDerivedState();
 
   return (
     <div className="relative">
@@ -15,15 +17,24 @@ export default function TeaGrid() {
         }}
       >
         {Array.from({ length: ROWS }, (_, r) =>
-          Array.from({ length: COLS }, (_, c) => (
-            <GridCell
-              key={`${r}-${c}`}
-              row={r}
-              col={c}
-              value={grid[r][c]}
-              onClick={() => handleCellClick(r, c)}
-            />
-          ))
+          Array.from({ length: COLS }, (_, c) => {
+            const value = grid[r][c];
+            const key = `${r},${c}`;
+            const isOnRoute = pathSet ? pathSet.has(key) : false;
+            const routeNumber = value && utensilOrder ? utensilOrder[value] : null;
+
+            return (
+              <GridCell
+                key={`${r}-${c}`}
+                row={r}
+                col={c}
+                value={value}
+                onClick={() => handleCellClick(r, c)}
+                routeNumber={routeNumber}
+                isOnRoute={isOnRoute}
+              />
+            );
+          })
         )}
       </div>
 
