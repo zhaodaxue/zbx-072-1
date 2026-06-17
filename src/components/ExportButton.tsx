@@ -1,27 +1,18 @@
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { useTeaStore } from '@/store/gridStore';
-import { validate } from '@/utils/validator';
-import { calculateRoute } from '@/utils/routeCalculator';
+import { useDerivedState } from '@/utils/derived';
 import { exportPlacement } from '@/utils/exporter';
-import { allUtensilsPlaced } from '@/utils/types';
 import { Download, X, Copy, Check } from 'lucide-react';
 
 export default function ExportButton() {
   const grid = useTeaStore((s) => s.grid);
+  const { canExport, routeSteps } = useDerivedState();
   const [showModal, setShowModal] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  const placed = allUtensilsPlaced(grid);
-  const valid = useMemo(() => validate(grid), [grid]);
-  const enabled = placed && valid.allPass;
-
-  const steps = useMemo(() => {
-    if (!enabled) return 0;
-    return calculateRoute(grid) ?? 0;
-  }, [grid, enabled]);
-
+  const steps = routeSteps ?? 0;
   const handleExport = () => {
-    if (!enabled) return;
+    if (!canExport) return;
     setShowModal(true);
   };
 
@@ -33,17 +24,17 @@ export default function ExportButton() {
     });
   };
 
-  const jsonOutput = enabled ? exportPlacement(grid, steps) : '';
+  const jsonOutput = canExport ? exportPlacement(grid, steps) : '';
 
   return (
     <>
       <button
         onClick={handleExport}
-        disabled={!enabled}
+        disabled={!canExport}
         className={`
           flex items-center justify-center gap-2 w-full py-2.5 rounded-xl text-sm font-semibold transition-all duration-200
           ${
-            enabled
+            canExport
               ? 'bg-amber-700 text-white hover:bg-amber-800 shadow-lg shadow-amber-700/20 active:scale-[0.98]'
               : 'bg-stone-200 text-stone-400 cursor-not-allowed'
           }

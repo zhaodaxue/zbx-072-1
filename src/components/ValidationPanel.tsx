@@ -1,16 +1,13 @@
-import { useMemo } from 'react';
-import { useTeaStore } from '@/store/gridStore';
-import { validate } from '@/utils/validator';
+import { useDerivedState } from '@/utils/derived';
 import { Check, X } from 'lucide-react';
 
 export default function ValidationPanel() {
-  const grid = useTeaStore((s) => s.grid);
-  const result = useMemo(() => validate(grid), [grid]);
+  const { validation } = useDerivedState();
 
   return (
     <div className="flex flex-col gap-2">
       <h3 className="text-sm font-semibold tracking-wide text-stone-500 mb-1">合法性校验</h3>
-      {result.rules.map((rule) => (
+      {validation.rules.map((rule) => (
         <div
           key={rule.key}
           className={`

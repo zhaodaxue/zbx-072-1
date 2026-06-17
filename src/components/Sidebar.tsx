@@ -1,17 +1,13 @@
 import { useTeaStore } from '@/store/gridStore';
-import { UtensilId, UTENSIL_INFO, ROWS, COLS } from '@/utils/types';
+import { useDerivedState } from '@/utils/derived';
+import { UtensilId, UTENSIL_INFO } from '@/utils/types';
 
 const UTENSIL_IDS: UtensilId[] = ['H', 'G', 'B', 'Y'];
 
 export default function Sidebar() {
-  const { selectedUtensil, selectUtensil, grid } = useTeaStore();
-
-  const placedUtensils = new Set<UtensilId>();
-  for (let r = 0; r < ROWS; r++) {
-    for (let c = 0; c < COLS; c++) {
-      if (grid[r][c]) placedUtensils.add(grid[r][c]!);
-    }
-  }
+  const selectedUtensil = useTeaStore((s) => s.selectedUtensil);
+  const selectUtensil = useTeaStore((s) => s.selectUtensil);
+  const { placedUtensils } = useDerivedState();
 
   return (
     <div className="flex flex-col gap-3 w-28">
@@ -19,7 +15,7 @@ export default function Sidebar() {
       {UTENSIL_IDS.map((uid) => {
         const info = UTENSIL_INFO[uid];
         const isSelected = selectedUtensil === uid;
-        const isPlaced = placedUtensils.has(uid);
+        const isPlaced = placedUtensils[uid];
 
         return (
           <button

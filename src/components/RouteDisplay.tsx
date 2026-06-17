@@ -1,21 +1,10 @@
-import { useMemo } from 'react';
-import { useTeaStore } from '@/store/gridStore';
-import { calculateRoute } from '@/utils/routeCalculator';
-import { allUtensilsPlaced } from '@/utils/types';
-import { validate } from '@/utils/validator';
+import { useDerivedState } from '@/utils/derived';
 import { Footprints } from 'lucide-react';
 
 export default function RouteDisplay() {
-  const grid = useTeaStore((s) => s.grid);
-  const placed = allUtensilsPlaced(grid);
-  const valid = useMemo(() => validate(grid), [grid]);
+  const { allPlaced, validation, routeSteps } = useDerivedState();
 
-  const steps = useMemo(() => {
-    if (!placed || !valid.allPass) return null;
-    return calculateRoute(grid);
-  }, [grid, placed, valid.allPass]);
-
-  if (!placed) {
+  if (!allPlaced) {
     return (
       <div className="flex flex-col items-center gap-1 py-3 text-stone-400">
         <Footprints className="w-5 h-5" />
@@ -24,7 +13,7 @@ export default function RouteDisplay() {
     );
   }
 
-  if (!valid.allPass) {
+  if (!validation.allPass) {
     return (
       <div className="flex flex-col items-center gap-1 py-3 text-stone-400">
         <Footprints className="w-5 h-5" />
@@ -39,7 +28,7 @@ export default function RouteDisplay() {
         <Footprints className="w-5 h-5" />
         <span className="text-xs font-medium">最短动线步数</span>
       </div>
-      <span className="text-3xl font-bold text-amber-900 tabular-nums">{steps}</span>
+      <span className="text-3xl font-bold text-amber-900 tabular-nums">{routeSteps}</span>
       <span className="text-[10px] text-stone-400">从入口经四器具至出口</span>
     </div>
   );
