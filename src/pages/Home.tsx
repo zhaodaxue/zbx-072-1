@@ -26,7 +26,7 @@ export default function Home() {
             <TeaGrid />
 
             <div className="flex items-center justify-between">
-              <span className="text-xs text-stone-400">点击空格放置选中器具 · 点击已放格清空</span>
+              <span className="text-xs text-stone-400">点空格循环切换器具 · 侧栏选定后点空格放置 · 已放格再点清空</span>
               <button
                 onClick={resetGrid}
                 className="flex items-center gap-1 text-xs text-stone-400 hover:text-stone-600 transition-colors"
