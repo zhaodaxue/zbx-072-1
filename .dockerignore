@@ -1,0 +1,6 @@
+.dockerignore
+.trae
+node_modules
+dist
+.git
+*.md
